@@ -65,3 +65,35 @@ A with vector b and jointly apply the Gauss Jordan elimination procedure.
  2 −1 5   x2  = 2
 −1 −2 4   x3    6
 
+We can build a simple iterative procedure to systematically convert the coefficient matrix A into the Upper Triangular Form. We will call this procedure Pivot &
+Multiply.
+(1) Start with row 1 of the co-efficient matrix
+(2) Pivot: The first non-zero element in the row being evaluated
+(3) Multiplier: The element being eliminated divided by the Pivot
+(4) Subtract Multiplier times row n from row n+1
+(5) Advance to the next row and repeat
+This works remarkably well except when you run into problems. For instance, when
+you advance from one row to the next, your Pivot might be zero. If so, no problem. Just
+simply exchange the rows (and exchange the corresponding constraint rows as well) and
+continue. If there is no solution to the problem, you’ll end up with one or more equations
+that are completely eliminated and have no elements left for pivoting.
+```{r}
+a <- matrix(c(1, 2, -1, 1, -1, -2, 3, 5, 4), nrow=3, ncol=3) 
+b <- matrix(c(1, 2, 6), nrow=3, ncol=1)
+r <- dim(a)[1]
+c <- dim(a)[2]+dim(b)[2]
+ab <- matrix(c(a, b), nrow=r, ncol=c)
+ab
+print(r)
+print(c)
+print(ab[2,])
+
+x = function(A, b){
+  r <- dim(A)[1]
+  c <- dim(A)[2]+dim(b)[2]
+  print(r)
+  print(c)
+}
+x
+```
+
