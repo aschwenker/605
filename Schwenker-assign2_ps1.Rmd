@@ -1,0 +1,37 @@
+---
+title: "assignment 2"
+author: "Anne Schwenker"
+date: "February 6, 2019"
+output: html_document
+---
+1. Problem set 1
+(1) Show that $A^T$A $\neq$ A$A^T$
+```{r}
+A<-matrix(c(0,1,0,0),nrow = 2, ncol = 2)
+A
+At<-t(A)
+AtA<-At%*%A
+AAt<-A%*%At
+AtA
+AAt
+identical(AtA, AAt) 
+```
+
+in general. (Proof and demonstration.)
+(2) For a special type of square matrix A, we get $A^T$A = A$A^T$
+Under what conditions could this be true? (Hint: The Identity matrix I is an example of such a matrix).
+
+If the matrix is symmetical, its transpose will be identical, thus $A^T$A = A$A^T$
+
+```{r}
+A<-matrix(c(3,0,0,3),nrow = 2, ncol = 2)
+A
+At<-t(A)
+AtA<-At%*%A
+AAt<-A%*%At
+AtA
+AAt
+identical(AtA, AAt)
+```
+
+

@@ -1,0 +1,19 @@
+---
+title: "Aschwenker_Discussion_2"
+author: "Anne Schwenker"
+date: "February 6, 2019"
+output: html_document
+---
+Exercise MO.T34 Manley Perkel
+Suppose A is a square matrix. Prove that A + $A^t$ is a symmetric matrix.
+
+
+```{r}
+A<-matrix(c(1,0,1,0),nrow=2,ncol=2)
+A
+At<-t(A)
+At
+AAt<-A+ At
+AAt
+isSymmetric(AAt)
+```
