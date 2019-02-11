@@ -34,4 +34,53 @@ AAt
 identical(AtA, AAt)
 ```
 
+2. Problem set 2
+Matrix factorization is a very important problem. There are supercomputers built just
+to do matrix factorizations. Every second you are on an airplane, matrices are being
+factorized. Radars that track flights use a technique called Kalman filtering. At the heart
+of Kalman Filtering is a Matrix Factorization operation. Kalman Filters are solving linear
+systems of equations when they track your flight using radars.
+Write an R function to factorize a square matrix A into LU or LDU, whichever you
+prefer. 
+```{r}
+library(matrixcalc)
+LUD_3 <- function(A){
+  a1<-A[1,1]
+  b1<-A[2,1]
+  b2<-A[2,2]
+  c1<-A[3,1]
+  c2<-A[3,2]
+  multiplier_1<- -1*b1/a1
+  multiplier_2 <- -1*c1/a1
+  
+  # create L based on matrix to fill in lower with multipliers
+  R1<- A[1,]
+  R2<-A[2,]
+  R3<- A[3,]
+  U<-R1
+  U2<-((R1*multiplier_1)+R2)
+  print(U2)
+  U3_<-((R1*multiplier_2)+R3)
+  U3_b2<-U2[2]
+  U3_c2<-U3_[2]
 
+  multiplier_3 <- -1*(U3_c2/U3_b2)
+  print((multiplier_3))
+
+  print(((U2*multiplier_3)))
+  U3<-((U2*multiplier_3)+U3_)
+  U<-rbind(U,U2,U3)
+  print(U)
+  L<-matrix(c(1,-1*multiplier_1,-1*multiplier_2,0,1,-1*multiplier_3,0,0,1),nrow=3,ncol=3)
+  print(L)
+  luA <- lu.decomposition( A )
+  L2 <- luA$L
+  U2 <- luA$U
+  identical(U, U2)
+  identical(L, L2)
+}
+
+A<-matrix(c(1,-2,3,4,8,4,-3,5,7),nrow = 3, ncol = 3)
+LUD_3(A)
+
+```
