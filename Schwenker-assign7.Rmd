@@ -1,0 +1,83 @@
+---
+title: "Schwenker assign7"
+author: "Anne Schwenker"
+date: "March 12, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+1. Let X1, X2, . . . , Xn be n mutually independent random variables, each of
+which is uniformly distributed on the integers from 1 to k. Let Y denote the
+minimum of the Xi’s. Find the distribution of Y .
+ P(Y=x)  $$\frac {(k−x+1)^n−(k−x)^n} {k^n} $$
+
+2. Your organization owns a copier (future lawyers, etc.) or MRI (future doctors).
+This machine has a manufacturer’s expected lifetime of 10 years. This means
+that we expect one failure every ten years. (Include the probability statements
+and R Code for each part.).
+a. What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as a geometric. (Hint: the probability is
+equivalent to not failing during the first 8 years..)
+```{r}
+p_fail <-1/10
+not_fail<- 1-p_fail
+pp<-pgeom(8, p_fail, lower.tail = TRUE, log.p = FALSE)
+print(paste("probability using geometric modeling is ",pp))
+
+expected_value<-1/p_fail
+print(paste("expected value using geometric modeling is ",expected_value))
+
+sd<-sqrt(not_fail/p_fail**2)
+print(paste("standard deviation using geometric modeling is ",sd))
+
+```
+
+
+b. What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as an exponential.
+```{r}
+prob_exp <-1-pexp(8,0.1)
+print(paste("probability using exponential modeling is ",prob_exp))
+exp_expected<-1/(1/10)
+print(paste("expected value using exponential modeling is ",exp_expected))
+
+exp_sd <-sqrt((1)/(.1^2))
+print(paste("standard deviation using exponential modeling is ",exp_sd))
+
+```
+
+c. What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as a binomial. (Hint: 0 success in 8
+years)
+
+```{r}
+p_fail <-1/10
+not_fail<- 1-p_fail
+p_binom<-pbinom(0,8,p_fail)
+print(paste("probability using binomial modeling is ",p_binom))
+binom_expected_value<-8*p_fail
+print(paste("expected value using binomial modeling is ",binom_expected_value))
+
+binom_sd<-sqrt(8*p_fail*not_fail)
+print(paste("standard deviation using binomial modeling is ",binom_sd))
+
+```
+
+d. What is the probability that the machine will fail after 8 years?. Provide also the
+expected value and standard deviation. Model as a Poisson. 
+```{r}
+lambda <- 8*p_fail/1
+print(paste("lambda is ",lambda))
+p_pois<-ppois(0,lambda)
+print(paste("probability using poisson modeling is ",p_pois))
+
+pois_expected <- lambda
+print(paste("expected value using poisson modeling is ",pois_expected))
+
+pois_sd<-sqrt(lambda)
+print(paste("standard deviation using poisson modeling is ",pois_sd))
+
+```
+
