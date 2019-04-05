@@ -1,0 +1,35 @@
+---
+title: "Schwenker-assign 10"
+author: "Anne Schwenker"
+date: "March 29, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+Smith is in jail and has 1 dollar; he can get out on bail if he has 8 dollars.
+A guard agrees to make a series of bets with him. If Smith bets A dollars,
+he wins A dollars with probability .4 and loses A dollars with probability .6.
+Find the probability that he wins 8 dollars before losing all of his money if
+(a) he bets 1 dollar each time (timid strategy).
+qz = (q/p)$^z$ − 1/(q/p)$^M$ − 1
+```{r}
+x=(1.5^1-1)/(1.5^8-1)
+print(x)
+```
+
+
+(b) he bets, each time, as much as possible but not more than necessary to
+bring his fortune up to 8 dollars (bold strategy).
+in order to reach $8 he would need to win three times in a row if he is betting all his money -- 1,2,4,8
+```{r}
+y = dbinom(3,3,0.4)
+print(y)
+
+
+```
+
+(c) Which strategy gives Smith the better chance of getting out of jail?
+
+the bold stragegy gives him the better chance of getting out of jail 
