@@ -1,0 +1,48 @@
+---
+title: "Schwenker assign 11"
+author: "Anne Schwenker"
+date: "April 13, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Using the “cars” dataset in R, build a linear model for stopping distance as a function of speed and replicate the analysis of your textbook chapter 3 (visualization, quality evaluation of the model, and
+residual analysis.)
+
+```{r}
+summary (cars)
+```
+
+VISUALIZATION
+```{r}
+plot(cars$speed, cars$dist, xlab='Speed - miles per hour', ylab='Stopping Distance - feet', 
+     main='Stopping Distance as a function of Speed')
+```
+```{r}
+stop_by_speed<- lm(cars$dist ~ cars$speed)
+stop_by_speed
+
+plot(cars$speed,cars$dist)
+abline(stop_by_speed)
+```
+
+
+QUALITY EVALUATION OF THE MODEL
+
+```{r}
+summary(stop_by_speed)
+
+```
+
+
+RESIDUAL ANALYSIS
+```{r}
+plot(fitted(stop_by_speed),resid(stop_by_speed))
+
+qqnorm(resid(stop_by_speed))
+qqline(resid(stop_by_speed))
+```
+

@@ -1,0 +1,42 @@
+---
+title: "FINAL"
+author: "Anne Schwenker"
+date: "May 11, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+Using R, generate a random variable X that has 10,000 random uniform numbers from 1 to N, where N can be any number of your choosing greater than or equal to 6.  Then generate a random variable Y that has 10,000 random normal numbers with a mean of μ=σ=(N+1)/2.  
+Probability.   Calculate as a minimum the below probabilities a through c.  Assume the small letter "x" is estimated as the median of the X variable, and the small letter "y" is estimated as the 1st quartile of the Y variable.  Interpret the meaning of all probabilities.
+5 points           a.   P(X>x | X>y)		b.  P(X>x, Y>y)		c.  P(X<x | X>y)				
+5 points.   Investigate whether P(X>x and Y>y)=P(X>x)P(Y>y) by building a table and evaluating the marginal and joint probabilities.
+5 points.  Check to see if independence holds by using Fisher’s Exact Test and the Chi Square Test.  What is the difference between the two? Which is most appropriate?
+
+```{r}
+library(prob)
+X=runif(10000,min=1,max=6)
+x=median(X)
+prob<-pnorm(X,x)
+Space<-probspace(X,prob)
+Y=rnorm(10000,mean=(6+1)/2,sd=(6+1)/2)
+y=quantile(Y, 0.25)
+#a  P(X>x | X>y) probability X is greater than the median of X given that X is greater than the mean of Y
+Prob(Space,X>x, given = X>y)
+
+#b.  P(X>x, Y>y) probability X is greater than the median of X and Y is greater than y
+Prob(Space,X>x, given = X>y)
+#https://districtdatalabs.silvrback.com/conditional-probability-with-r
+
+```
+
+
+
