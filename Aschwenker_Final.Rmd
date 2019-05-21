@@ -19,7 +19,7 @@ Using R, generate a random variable X that has 10,000 random uniform numbers fro
 Probability.   Calculate as a minimum the below probabilities a through c.  Assume the small letter "x" is estimated as the median of the X variable, and the small letter "y" is estimated as the 1st quartile of the Y variable.  Interpret the meaning of all probabilities.
 5 points           a.   P(X>x | X>y)		b.  P(X>x, Y>y)		c.  P(X<x | X>y)				
 5 points.   Investigate whether P(X>x and Y>y)=P(X>x)P(Y>y) by building a table and evaluating the marginal and joint probabilities.
-5 points.  Check to see if independence holds by using Fisher’s Exact Test and the Chi Square Test.  What is the difference between the two? Which is most appropriate?
+5 points.  Check to see if independence holds by using Fishers Exact Test and the Chi Square Test.  What is the difference between the two? Which is most appropriate?
 
 ```{r}
 library(prob)
@@ -30,13 +30,111 @@ Space<-probspace(X,prob)
 Y=rnorm(10000,mean=(6+1)/2,sd=(6+1)/2)
 y=quantile(Y, 0.25)
 #a  P(X>x | X>y) probability X is greater than the median of X given that X is greater than the mean of Y
-Prob(Space,X>x, given = X>y)
+a_prob<-Prob(Space,X>x, given = X>y)
 
 #b.  P(X>x, Y>y) probability X is greater than the median of X and Y is greater than y
-Prob(Space,X>x, given = X>y)
+bprob<-Prob(Space,X>x,Y>y)
+#c.  P(X<x | X>y)	
+cprob<-Prob(Space,X<x, given = X>y)
+x_prob<-Prob(Space,X>x)
+y_prob<-Prob(Space,Y>y)
+XY_prob<-x_prob*y_prob
+#Investigate whether P(X>x and Y>y)=P(X>x)P(Y>y) by building a table and evaluating the marginal and joint probabilities.
+identical(bprob,XY_prob)
+(cont.table <- table(cprob,XY_prob))
+
+#5 points.  Check to see if independence holds by using Fishers Exact Test and the Chi Square Test.  What is the difference between the two? Which is most appropriate?
+  #P(X<=x, Y>y) = P(X<=x)P(Y>y)?
+
+chisq.test(cont.table)
 #https://districtdatalabs.silvrback.com/conditional-probability-with-r
+#print(The p-value is >> than our defined significance value of 0.05 so we do accept the null hypothesis and conclude that the variables #are independent.
 
 ```
 
+Problem 2
+You are to register for Kaggle.com (free) and compete in the House Prices: Advanced Regression Techniques competition.  https://www.kaggle.com/c/house-prices-advanced-regression-techniques .  I want you to do the following.
+5 points.  Descriptive and Inferential Statistics. Provide univariate descriptive statistics and appropriate plots for the training data set.  Provide a scatterplot matrix for at least two of the independent variables and the dependent variable. Derive a correlation matrix for any three quantitative variables in the dataset.  Test the hypotheses that the correlations between each pairwise set of variables is 0 and provide an 80% confidence interval.  Discuss the meaning of your analysis.  Would you be worried about familywise error? Why or why not?
+
+```{r}
+#Provide univariate descriptive statistics and appropriate plots for the training data set
+library(ggplot2)
+library(GGally)
+train_data = read.csv(file ="H:/CLASS/CUNY_SPS_MS_DS/SPRING19_605/605/Kaggle_data/train.csv",header=TRUE, sep=",")
+test_data = read.csv(file ="H:/CLASS/CUNY_SPS_MS_DS/SPRING19_605/605/Kaggle_data/test.csv",header=TRUE, sep=",")
+summary(train_data)
+qplot(train_data$SalePrice,geom="histogram",  
+      main = "Histogram for Age", 
+      xlab = "Age", 
+      col=I("red"))
+#Provide a scatterplot matrix for at least two of the independent variables and the dependent variable.
+pairs(~SalePrice+LotFrontage+LotArea+TotRmsAbvGrd+BedroomAbvGr,data=train_data, 
+   main="Simple Scatterplot Matrix")
+#Derive a correlation matrix for any three quantitative variables in the dataset.
+train_quant_df<-train_data[,c(5,55,81)]
+ggcorr(train_quant_df)
+#Test the hypotheses that the correlations between each pairwise set of variables is 0 and provide an 80% confidence interval
+cor.test(train_data$LotArea, train_data$LotFrontage, method = "pearson" , conf.level = 0.8)
+print("LotFrontage and Lot Area sample estimate correlation is within the 80 percent confident interval")
+cor.test(train_data$TotRmsAbvGrd, train_data$LotArea, method = "pearson" , conf.level = 0.8)
+print("LotArea and TotRmsAbvGrd sample estimate correlation is within the 80 percent confident interval")
+cor.test(train_data$BedroomAbvGr, train_data$TotRmsAbvGrd, method = "pearson" , conf.level = 0.8)
+print("TotRmsAbvGrd and TotRmsAbvGrd sample estimate correlation is within the 80 percent confident interval")
+cor.test(train_data$LotArea, train_data$BedroomAbvGr, method = "pearson" , conf.level = 0.8)
+print("BedroomAbvGr and LotArea sample estimate correlation is within the 80 percent confident interval")
+
+```
+#Would you be worried about familywise error? Why or why not?
+There is a high probability of familywise error with this data as there are many dependent variables
 
 
+5 points. Linear Algebra and Correlation.  Invert your correlation matrix from above. (This is known as the precision matrix and contains variance inflation factors on the diagonal.) Multiply the correlation matrix by the precision matrix, and then multiply the precision matrix by the correlation matrix. Conduct LU decomposition on the matrix. 
+```{r}
+library(matrixcalc)
+#Invert your correlation matrix from above. (This is known as the precision matrix and contains variance inflation factors on the diagonal.)
+cor_mat <-cor(train_quant_df)
+precision <- solve(cor_mat)
+#Multiply the correlation matrix by the precision matrix
+round(cor_mat %*% precision, 5)
+#Conduct LU decomposition on the matrix
+mat_LU_decom<-lu.decomposition(precision)
+mat_LU_decom
+```
+
+
+5 points.  Calculus-Based Probability & Statistics.  Many times, it makes sense to fit a closed form distribution to data.  Select a variable in the Kaggle.com training dataset that is skewed to the right, shift it so that the minimum value is absolutely above zero if necessary.  Then load the MASS package and run fitdistr to fit an exponential probability density function.  (See  https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/fitdistr.html ).  Find the optimal value of ??? for this distribution, and then take 1000 samples from this exponential distribution using this value (e.g., rexp(1000, ???)).  Plot a histogram and compare it with a histogram of your original variable.   Using the exponential pdf, find the 5th and 95th percentiles using the cumulative distribution function (CDF).   Also generate a 95% confidence interval from the empirical data, assuming normality.  Finally, provide the empirical 5th percentile and 95th percentile of the data.  Discuss.
+10 points.  Modeling.  Build some type of multiple regression  model and submit your model to the competition board.  Provide your complete model summary and results with analysis.  Report your Kaggle.com user name and score.
+```{r}
+#Select a variable in the Kaggle.com training dataset that is skewed to the right, shift it so that the minimum value is absolutely above zero if necessary.
+library(e1071)
+library(Rmisc)
+skewness(train_data$LotArea)
+ggplot(train_data, aes(x =LotArea)) + geom_density()
+#Then load the MASS package and run fitdistr to fit an exponential probability density function.  (See  https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/fitdistr.html ).
+library(MASS)
+expdist <- fitdistr(na.exclude(train_data$LotArea),densfun = "exponential"); exp.distribution
+opt = rexp(1000,expdist$estimate)
+print(expdist)
+hist(train_data$LotArea)
+hist(opt)
+#Using the exponential pdf, find the 5th and 95th percentiles using the cumulative distribution function (CDF).   Also generate a 95% confidence interval from the empirical data, assuming normality.  Finally, provide the empirical 5th percentile and 95th percentile of the data.  Discuss.
+qexp(.05, expdist$estimate)
+qexp(.95, expdist$estimate)
+CI(na.exclude(train_data$LotArea), ci=.95)
+quantile(na.exclude(train_data$LotArea), .05 )
+quantile(na.exclude(train_data$LotArea), .95 )
+
+mod1<- lm(formula = log(SalePrice) ~ log(LotArea)+TotRmsAbvGrd+BldgType+OverallQual,data = train_data)
+summary(mod1)
+plot(fitted(mod1), resid(mod1), col = "royalblue2")
+prediction <- exp(predict(mod1, newdata = test_data) )
+summary(prediction)
+df <- as.data.frame(cbind(test_data$Id, prediction))
+
+#Create CSV from df
+colnames(df) <- c("ID","SalePrice") 
+write.csv(df, "kaggle.csv")
+```
+
+Kaggle username : aschwenker
+score: 0.19498
