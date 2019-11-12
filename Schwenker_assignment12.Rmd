@@ -8,10 +8,136 @@ output: pdf_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
 ```{r}
 why <- read.csv(url('https://raw.githubusercontent.com/aschwenker/Fall2019/master/who.csv'))
-print(why)
-conflict
+head(why)
+```
+ Provide a scatterplot of LifeExp~TotExp, and run simple linear regression. Do not transform the
+variables. Provide and interpret the F statistics, R^2, standard error,and p-values only. Discuss
+whether the assumptions of simple linear regression met.
+```{r}
+plot(why$TotExp,  why$LifeExp, main='scatterplot', ylab='Life Expentancy', xlab = 'Total Expenditure', col=3)
+
+```
+```{r}
+lm = lm(why$LifeExp~why$TotExp)
+lm
+summary(lm)
+```
+Provide and interpret the F statistics, R^2, standard error,and p-values only. Discuss
+whether the assumptions of simple linear regression met.
+
+R^2:
+0.2577, Adjusted R-squared: 0.2537 - low, model only explains 25% of the response variable 
+
+F-statistic:
+65.26 on 1 and 188 DF, high
+p-value: 7.714e-14 - near 0, reject the null hypothesis 
+
+Residual standard error: 9.371 on 188 degrees of freedom 
+```{r}
+mean(lm$residuals)
+plot(lm)
 ```
 
+
+assumptions of simple linear regression :
+1. linearity - these variables do not show a linear relationship
+2. Homoscedasticity - from the plot of the model we can see the variables are not randomly distributed
+3. Autocorrelation of residuals:
+```{r}
+lmtest::dwtest(lm)
+```
+
+2. Raise life expectancy to the 4.6 power (i.e., LifeExp^4.6). Raise total expenditures to the 0.06
+power (nearly a log transform, TotExp^.06). Plot LifeExp^4.6 as a function of TotExp^.06, and r
+re-run the simple regression model using the transformed variables. Provide and interpret the F
+statistics, R^2, standard error, and p-values. Which model is "better?"
+
+```{r}
+#Raise LifeExp to the 4.6 power & TotExp to the 0.06 power
+LifeExp_46 <- why$LifeExp^4.6
+TotExp_06 <- why$TotExp^0.06
+plot(TotExp_06,  LifeExp_46, main='scatterplot', ylab='Life Expentancy ^4.6', xlab = 'Total Expenditure ^ 0.06', col=3)
+
+#Linear regression model
+LM_2 <- lm(LifeExp_46 ~ TotExp_06)
+summary(LM_2)
+```
+Provide and interpret the F
+statistics, R^2, standard error, and p-values. Which model is "better?"
+
+
+R^2:
+0.7298, Adjusted R-squared: 0.7283 - model explains about 73% of the response variable 
+
+F-statistic:
+507.7 on 1 and 188 DF, large
+
+p-value: 2.2e-16 - near 0, reject the null hypothesis 
+
+Residual standard error: 90490000 on 188 degrees of freedom - higher
+
+```{r}
+mean(LM_2$residuals)
+plot(LM_2)
+```
+assumptions of simple linear regression :
+1. linearity - these variables do show a linear relationship
+2. Homoscedasticity - from the plot of the model we can see the variables are randomly distributed
+3. Autocorrelation of residuals:
+```{r}
+lmtest::dwtest(LM_2)
+```
+The second model is a better based on meeting the simple linear regression assumptions and having better R^2
+
+
+3. Using the results from 3, forecast life expectancy when TotExp^.06 =1.5. Then forecast life
+expectancy when TotExp^.06=2.5.
+
+```{r}
+range <- data.frame(TotExp_06 = c(1.5,2.5))
+predict(LM_2, range,interval="predict")^(1/4.6)
+```
+
+4. Build the following multiple regression model and interpret the F Statistics, R^2, standard error,
+and p-values. How good is the model?
+LifeExp = b0+b1 x PropMd + b2 x TotExp +b3 x PropMD x TotExp
+
+```{r}
+plot(LifeExp ~ PropMD + TotExp + TotExp:PropMD, why)
+LM_3 <- lm(LifeExp ~ PropMD + TotExp + TotExp:PropMD, why)
+summary(LM_3)
+```
+R^2:
+0.3574, Adjusted R-squared: 0.3471 - model explains about 35% of the response variable 
+
+F-statistic:
+34.49 on 3 and 186 DF
+
+p-value: 2.2e-16 - near 0, reject the null hypothesis 
+
+Residual standard error: 8.765 on 186 degrees of freedom
+
+This model does not meet the assumptions, and is therefore no good
+```{r}
+mean(LM_3$residuals)
+plot(LM_3)
+```
+assumptions of simple linear regression :
+1. linearity - these variables do not show a linear relationship
+2. Homoscedasticity - from the plot of the model we can see the variables are not randomly distributed
+3. Autocorrelation of residuals:
+```{r}
+lmtest::dwtest(LM_3)
+```
+
+5. Forecast LifeExp when PropMD=.03 and TotExp = 14. Does this forecast seem realistic? Why
+or why not?
+
+```{r}
+Prediction <- data.frame(PropMD=0.03, TotExp=14)
+predict(LM_3, Prediction,interval="predict")
+```
+
+No this is not realistic, the fit being 107.696 shows this model does not work
