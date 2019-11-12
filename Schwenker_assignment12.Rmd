@@ -1,0 +1,16 @@
+---
+title: "Schwenker_assignment_12"
+author: "Anne Schwenker"
+date: "November 11, 2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+why <- read.csv(url('https://raw.githubusercontent.com/aschwenker/Fall2019/master/who.csv'))
+print(why)
+```
+
